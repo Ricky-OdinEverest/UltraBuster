@@ -20,4 +20,32 @@ void FUB_GameplayTags::InitializeNativeGameplayTags()
 			FName("Attributes.MaxHealth"),
 			FString("Maximum amount of Health obtainable")
 			);
+
+	/*
+	* Damage Types
+*/
+	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Damage"),
+	FString("Damage")
+	);
+
+	
+
+	GameplayTags.Damage_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		 FName("Damage.Fire"),
+		 FString("Fire Damage Type")
+		 );
+	GameplayTags.Damage_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		 FName("Damage.Lightning"),
+		 FString("Lightning Damage Type")
+		 );
+	GameplayTags.Damage_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Damage.Arcane"),
+		FString("Arcane Damage Type")
+		);
+	GameplayTags.Damage_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Damage.Physical"),
+		FString("Physical Damage Type")
+		);
+ 
 };

@@ -25,6 +25,13 @@ public:
 
 	FGameplayTag Attributes_MaxHealth;
 	FGameplayTag Attributes_Health;
+
+	FGameplayTag Damage;
+	FGameplayTag Damage_Bullet;
+	FGameplayTag Damage_Fire;
+	FGameplayTag Damage_Lightning;
+	FGameplayTag Damage_Arcane;
+	FGameplayTag Damage_Physical;
 	
 private:
 	static FUB_GameplayTags GameplayTags;

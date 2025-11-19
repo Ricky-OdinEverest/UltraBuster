@@ -88,7 +88,7 @@ public:
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, MaxHealth);
 
-
+	// value set locally by gameplay effects
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, IncomingDamage);
