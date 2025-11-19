@@ -1,0 +1,65 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "5.6",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "UltraBuster",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"GameplayAbilities",
+				"CoreUObject",
+				"EnhancedInput"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ModelingToolsEditorMode",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		},
+		{
+			"Name": "GameplayStateTree",
+			"Enabled": true
+		},
+		{
+			"Name": "GameFeatures",
+			"Enabled": true
+		},
+		{
+			"Name": "SST",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/92a8824c461141ce95f77e454d0c1ba5"
+		},
+		{
+			"Name": "Mover",
+			"Enabled": true
+		},
+		{
+			"Name": "ChaosMover",
+			"Enabled": true
+		},
+		{
+			"Name": "MoverAnimNext",
+			"Enabled": true
+		},
+		{
+			"Name": "MoverExamples",
+			"Enabled": true
+		},
+		{
+			"Name": "MoverIntegrations",
+			"Enabled": true
+		},
+		{
+			"Name": "MoverTests",
+			"Enabled": true
+		}
+	]
+}
