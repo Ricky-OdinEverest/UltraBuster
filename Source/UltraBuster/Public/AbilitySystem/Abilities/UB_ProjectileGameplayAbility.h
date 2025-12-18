@@ -8,6 +8,9 @@
 
 class AUB_projectile;
 class UGameplayEffect;
+class UInventoryComponent;
+class UInventoryItemInstance;
+class UItemStaticData;
 
 /**
  * 
@@ -16,6 +19,19 @@ UCLASS()
 class ULTRABUSTER_API UUB_ProjectileGameplayAbility : public UUB_DamageGameplayAbility
 {
 	GENERATED_BODY()
+	
+public:
+
+	// Dealing with ammo by checking before we commit the ability
+	virtual bool CommitAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, OUT FGameplayTagContainer* OptionalRelevantTags) override;
+	
+	UFUNCTION(BlueprintPure)
+	bool HasEnoughAmmo() const;
+
+	UFUNCTION(BlueprintCallable)
+	void DecAmmo();
+
+
 protected:
  
 	virtual void ActivateAbility(
@@ -25,8 +41,12 @@ protected:
 		const FGameplayEventData* TriggerEventData) override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
-	void SpawnProjectile(const FVector& ProjectileTargetLocation, const FGameplayTag& MontageTag);
+	void SpawnProjectile(const FVector& ProjectileTargetLocation);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AUB_projectile> ProjectileClass;
+	
+// allows us to access ammo and weapon data
+	UPROPERTY()
+	UInventoryComponent* InventoryComponent = nullptr;
 };

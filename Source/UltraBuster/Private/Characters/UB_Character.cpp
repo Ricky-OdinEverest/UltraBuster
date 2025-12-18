@@ -2,23 +2,31 @@
 
 
 #include "Characters/UB_Character.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Data/Buster_StartUpData.h"
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "AbilitySystem/UB_AbilitySystemComponent.h"
+#include "ActorComponents/InventoryComponent.h"
+#include "Characters/Player/UB_PlayerController.h"
 #include "Components/ArrowComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Movement/TwoDCMC.h"
 #include "Input/BusterInputComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "Characters/Player/UB_PlayerState.h"
-
-
+#include "Components/WidgetComponent.h"
+#include "UI/HUD/BusterHUD.h"
 
 
 AUB_Character::AUB_Character(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer.SetDefaultSubobjectClass<UTwoDCMC>(ACharacter::CharacterMovementComponentName))
 {
+	// Re-enable ticking (REQUIRED because BaseCharacter turned it off)
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 	TwoDCMC = Cast<UTwoDCMC>(GetCharacterMovement());
 	TwoDCMC->SetIsReplicated(true);
 
@@ -43,17 +51,11 @@ AUB_Character::AUB_Character(const FObjectInitializer& ObjectInitializer)
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 
 	//AbilitySystemComponent = CreateDefaultSubobject<UUB_AbilitySystemComponent>(TEXT("PlayerAbilitySystemComponent"));
-
+	
 	
 }
 
-UAbilitySystemComponent* AUB_Character::GetAbilitySystemComponent() const
-{
-	
 
-	return AbilitySystemComponent;
-
-}
 
 void AUB_Character::PossessedBy(AController* NewController)
 {
@@ -61,6 +63,10 @@ void AUB_Character::PossessedBy(AController* NewController)
 
 	InitAbilityActorInfo();
 	GiveStartupAbilities();
+	InitHealthBarWidget();
+	InitAmmoWidget();
+	BindCallbacksToDependencies();
+	BroadcastInitialValues();
 }
 
 void AUB_Character::InitAbilityActorInfo()
@@ -76,10 +82,21 @@ void AUB_Character::InitAbilityActorInfo()
 
 	AttributeSet = UB_PlayerState->GetAttributeSet();
 	
-
-	InitializeDefaultAttributes();
 	
-	InitializeDefaultAttributes();
+	if (HasAuthority())
+	{
+		InitializeDefaultAttributes();
+	}
+	
+	
+	/*if (AUB_PlayerController* BusterPlayerController = Cast<AUB_PlayerController>(GetController()))
+	{
+		if (ABusterHUD* BusterHUD = Cast<ABusterHUD>(BusterPlayerController->GetHUD()))
+		{
+			BusterHUD->InitOverlay(BusterPlayerController, UB_PlayerState, AbilitySystemComponent, AttributeSet);
+		}
+	}*/
+	
 	
 }
 
@@ -88,25 +105,28 @@ void AUB_Character::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 
 	InitAbilityActorInfo();
+
+	InitHealthBarWidget();
+	InitAmmoWidget();
+	BindCallbacksToDependencies();
+	BroadcastInitialValues();
+}
+
+void AUB_Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//corrections not made on the owning client 
+	DOREPLIFETIME_CONDITION(AUB_Character, NewPitchY, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(AUB_Character, bIsAiming, COND_SkipOwner);
 }
 
 // Called when the game starts or when spawned
 void AUB_Character::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//Add Input Mapping Context
-	/*
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
-	*/
-
-	// Inform movement component of our initial orientation
+	
+	// Inform a movement component of our initial orientation
 	TwoDCMC->SetFacingRight(GetActorForwardVector().X > 0);
 	//AbilitySystemComponent = Cast<UUB_AbilitySystemComponent>(GetAbilitySystemComponent());
 	if (AbilitySystemComponent)
@@ -124,7 +144,13 @@ void AUB_Character::UpMoveInputPressed(const struct FInputActionValue& Value)
 
 void AUB_Character::Move(const struct FInputActionValue& Value)
 {
-
+	/*if (GEngine)
+	{
+		const FString ValueString= Value.ToString();
+		const FString LogMsg = FString::Printf(TEXT("[InputBinding] Moving: %s"), *ValueString);
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, LogMsg);
+	}*/
+		
 		float MovementValue = Value.Get<float>();
 		TwoDCMC->AddInputVector(FVector::ForwardVector * MovementValue);
 	
@@ -191,7 +217,7 @@ void AUB_Character::Jump()
 		Super::Jump();
 		bPressedUltraBusterJump = true;
 
-		//Stop Characther From Performing Jump Before Executing Mantle Logic
+		//Stop Character From Performing Jump Before Executing Mantle Logic
 		//bPressedJump = false;
 	}
 
@@ -217,13 +243,7 @@ void AUB_Character::GiveStartupAbilities()
 	for (const auto& Ability : StartupAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Ability);
-		/*if (GEngine && Ability)
-		{
-			const FString AbilityName = Ability->GetName();
-			const FString LogMsg = FString::Printf(TEXT("[AbilityGrant] Startup Ability (No Tag): %s"), *AbilityName);
-           
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Cyan, LogMsg);
-		}*/
+
 		UB_ASC->GiveAbility(AbilitySpec);
 	}
 	
@@ -236,37 +256,18 @@ void AUB_Character::GiveStartupAbilities()
 			LoadedData->GiveToAbilitySystemComponent(static_cast<UUB_AbilitySystemComponent*>(AbilitySystemComponent));			
 		}
 	}
-	else
-	{
-		/*if (GEngine)
-		{
-			const FString LogMsg = FString::Printf(TEXT("Null"));
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Cyan, LogMsg);
-		}*/
-	}
+
 }
 
 void AUB_Character::Input_AbilityInputPressed(FGameplayTag InInputTag) 
 {
-	/*
-	if (GEngine)
-	{
-		const FString LogMsg = FString::Printf(TEXT("AbilityInputTagPressed with Tag: %s"), *InInputTag.ToString());
-		// Using -1 for the key, 5 seconds, in Red
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, LogMsg);
-	}
-	*/
-	
 
-	if (AbilitySystemComponent)
-	{
-	//	AbilitySystemComponent->AbilityInputTagPressed(InInputTag);
-	}
+		GetBusterAbilitySystemComponent()->AbilityInputTagPressed(InInputTag);
 }
 
 void AUB_Character::Input_AbilityInputReleased(FGameplayTag InInputTag) 
 {
-	//AbilitySystemComponent->AbilityInputTagReleased(InInputTag);
+	GetBusterAbilitySystemComponent()->AbilityInputTagReleased(InInputTag);
 }
 
 
@@ -355,8 +356,8 @@ FCollisionQueryParams AUB_Character::GetIgnoreSelfParams() const
 
 	return Params;
 }
-
-// helper function allows us to call multipler attribute sets on a character
+// Shift to base
+/*// helper function allows us to call multipler attribute sets on a character
 void AUB_Character::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const
 {
 	check(IsValid(GetAbilitySystemComponent()));
@@ -371,11 +372,15 @@ void AUB_Character::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffec
 void AUB_Character::InitializeDefaultAttributes() const
 {
 	ApplyEffectToSelf(DefaultPrimaryAttributes, 1.f);
-}
+}*/
 // Called every frame
 void AUB_Character::Tick(float DeltaTime)
 {
+	// Re-enable tick because BaseCharacter turned it off
+	PrimaryActorTick.bCanEverTick = true; 
+	PrimaryActorTick.bStartWithTickEnabled = true;
 	Super::Tick(DeltaTime);
+
 
 }
 
@@ -426,18 +431,23 @@ void AUB_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		BusterInputComponent->BindAbilityActions(InputConfigDataAsset,this,&ThisClass::Input_AbilityInputPressed,&ThisClass::Input_AbilityInputReleased, &ThisClass::AbilityInputTagHeld);
 
 
-		
-	/*}
-	else
-	{
-		//UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
-	}*/
+		BusterInputComponent->BindAction(EquipNextInputAction, ETriggerEvent::Triggered, this, &AUB_Character::OnEquipNextTriggered);
+
+
+		BusterInputComponent->BindAction(DropItemInputAction, ETriggerEvent::Triggered, this, &AUB_Character::OnDropItemTriggered);
+	
+
+	
+		BusterInputComponent->BindAction(UnequipInputAction, ETriggerEvent::Triggered, this, &AUB_Character::OnUnequipTriggered);
+
+
+
 
 }
 
 void AUB_Character::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	//AbilitySystemComponent->AbilityInputTagHeld(InputTag);
+	GetBusterAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
 }
 void AUB_Character::SprintPressed()
 {
@@ -455,7 +465,7 @@ void AUB_Character::SprintReleased()
 
 void AUB_Character::CrouchPressed()
 {
-	//if (TwoDCMC && TwoDCMC->IsHanging()) TwoDCMC->EnterWallslide();
+
 	if (TwoDCMC) TwoDCMC->CrouchPressed();
 
 }
@@ -495,7 +505,21 @@ void AUB_Character::Look(const struct FInputActionValue& Value)
 	}
 
 	// Convert aim to world-space rotator for animation/weapon alignment
-	FVector AimOrigin = GetActorLocation();
+//	FVector AimOrigin = GetActorLocation();
+
+	// Get the Aim Origin from the spine socket
+	FVector AimOrigin;
+	if (GetMesh() && GetMesh()->DoesSocketExist(AimSocketName))
+	{
+		AimOrigin = GetMesh()->GetSocketLocation(AimSocketName);
+	}
+	else
+	{
+		// if I have not defined the socket
+		AimOrigin = GetActorLocation() + FVector(0.f, 0.f, 60.f);
+	}
+
+	
 	const FVector StickInput = FVector(InX, 0.f, InY) * 100.f;
 
 	FVector StickLocation = AimOrigin + StickInput;
@@ -531,4 +555,29 @@ void AUB_Character::Look(const struct FInputActionValue& Value)
 	
 	
 
+}
+
+// These probably need to go
+void AUB_Character::OnDropItemTriggered(const FInputActionValue& Value)
+{
+	FGameplayEventData EventPayload;
+	EventPayload.EventTag = UInventoryComponent::DropItemTag;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, UInventoryComponent::DropItemTag, EventPayload);
+}
+
+void AUB_Character::OnEquipNextTriggered(const FInputActionValue& Value)
+{
+	FGameplayEventData EventPayload;
+	EventPayload.EventTag = UInventoryComponent::EquipNextTag;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, UInventoryComponent::EquipNextTag, EventPayload);
+}
+
+void AUB_Character::OnUnequipTriggered(const FInputActionValue& Value)
+{
+	FGameplayEventData EventPayload;
+	EventPayload.EventTag = UInventoryComponent::UnequipTag;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, UInventoryComponent::UnequipTag, EventPayload);
 }

@@ -9,6 +9,8 @@ namespace UB_GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Shoot,"InputTag.Shoot")
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Melee,"InputTag.Melee")
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Dash,"InputTag.Dash");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Reload,"InputTag.Reload");
+
 };
 
 
@@ -20,6 +22,27 @@ void FUB_GameplayTags::InitializeNativeGameplayTags()
 			FName("Attributes.MaxHealth"),
 			FString("Maximum amount of Health obtainable")
 			);
+
+	/*
+	* Cooldowns 	
+*/
+
+	
+
+	GameplayTags.Data_RechargeTimestamp = UGameplayTagsManager::Get().AddNativeGameplayTag(
+FName("Data.RechargeTimestamp"),
+FString("Data.RechargeTimestamp")
+);
+
+	GameplayTags.Event_Weapon_ReloadStart = UGameplayTagsManager::Get().AddNativeGameplayTag(
+FName("Event.Weapon.ReloadStart"),
+FString("Event_Weapon_ReloadStart")
+);
+
+	GameplayTags.Reload_Cooldown = UGameplayTagsManager::Get().AddNativeGameplayTag(
+FName("Reload.Cooldown"),
+FString("Reload Cooldown")
+);
 
 	/*
 	* Damage Types

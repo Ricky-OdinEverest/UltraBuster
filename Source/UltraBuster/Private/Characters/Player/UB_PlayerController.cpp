@@ -27,11 +27,25 @@ UUB_AbilitySystemComponent* AUB_PlayerController::GetBusterAbilitySystemComponen
 		
 	}
 	return UB_AbilitySystemComponent;
-	/*const AUB_Character* OwnerCharacter = Cast<AUB_Character>(GetOwner());
-	return (OwnerCharacter ? OwnerCharacter->GetAbilitySystemComponent() : nullptr);*/
+
 }
 
 AUB_PlayerState* AUB_PlayerController::GetBusterPlayerState() const
 {
 	return CastChecked<AUB_PlayerState>(PlayerState, ECastCheckedType::NullAllowed);
 }
+
+/*void AUB_PlayerController::Input_AbilityInputPressed(FGameplayTag InInputTag) 
+{
+	if (GetBusterAbilitySystemComponent()) GetBusterAbilitySystemComponent()->AbilityInputTagPressed(InInputTag);
+}
+
+void AUB_PlayerController::Input_AbilityInputReleased(FGameplayTag InInputTag) 
+{
+	if (GetBusterAbilitySystemComponent()) GetBusterAbilitySystemComponent()->AbilityInputTagReleased(InInputTag);
+}
+
+void AUB_PlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	if (GetBusterAbilitySystemComponent()) GetBusterAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+}*/

@@ -30,7 +30,7 @@ public:
 
 private:
 
-	UPROPERTY(VisibleAnywhere, Category = "Crash|Abilities")
+	UPROPERTY(VisibleAnywhere, Category = "Buster|Abilities")
 	TObjectPtr<UUB_AbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Level)

@@ -405,8 +405,13 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement")
 	FORCEINLINE bool IsFacingRight() const { return Safe_bFacingRight; }
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement")
+	FORCEINLINE bool IsTurning() const { return Turning; }
+
 	/** To be called by owning character, upon BeginPlay() */
 	void SetFacingRight(bool bFacingRight);
+
+	
 
 	/** Checks whether the character is currently in the specified custom movement mode */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement")

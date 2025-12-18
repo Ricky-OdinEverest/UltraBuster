@@ -79,7 +79,7 @@ public:
 	
 	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttributes;
 
-
+	// --- VITAL ATTRIBUTES ---
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Vital Attributes")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, Health);
@@ -87,6 +87,37 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Vital Attributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, MaxHealth);
+
+	// --- AMMO ATTRIBUTES ---
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Ammo, Category = "Buster Attributes")
+	FGameplayAttributeData Ammo;
+	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, Ammo);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxAmmo, Category = "Buster Attributes")
+	FGameplayAttributeData MaxAmmo;
+	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, MaxAmmo);
+
+	// --- RECHARGE ATTRIBUTES ---
+
+	// The timestamp when the weapon will be ready (Server Time Seconds)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RechargeTime, Category = "Buster Attributes")
+	FGameplayAttributeData RechargeTime;
+	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, RechargeTime);
+
+	// The initial delay after a shot (e.g., 3.0s)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RechargeBaseDelay, Category = "Buster Attributes")
+	FGameplayAttributeData RechargeBaseDelay;
+	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, RechargeBaseDelay);
+
+	// The time added per subsequent shot (e.g., 0.5s)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RechargePenalty, Category = "Buster Attributes")
+	FGameplayAttributeData RechargePenalty;
+	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, RechargePenalty);
+
+	// The maximum time the recharge can be pushed out to (e.g., 3.0s)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RechargeDelayCap, Category = "Buster Attributes")
+	FGameplayAttributeData RechargeDelayCap;
+	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, RechargeDelayCap);
 
 	// value set locally by gameplay effects
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
@@ -99,6 +130,25 @@ public:
 
 	UFUNCTION()
 	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const;
+
+	UFUNCTION()
+	void OnRep_Ammo(const FGameplayAttributeData& OldAmmo) const;
+
+	UFUNCTION()
+	void OnRep_MaxAmmo(const FGameplayAttributeData& OldMaxAmmo) const;
+	
+	UFUNCTION()
+	void OnRep_RechargeTime(const FGameplayAttributeData& OldRechargeTime) const;
+
+	UFUNCTION()
+	void OnRep_RechargeBaseDelay(const FGameplayAttributeData& OldRechargeBaseDelay) const;
+
+	UFUNCTION()
+	void OnRep_RechargePenalty(const FGameplayAttributeData& OldRechargePenalty) const;
+
+	UFUNCTION()
+	void OnRep_RechargeDelayCap(const FGameplayAttributeData& OldRechargeDelayCap) const;
+	
 private:
 
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;

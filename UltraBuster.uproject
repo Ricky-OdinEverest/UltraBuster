@@ -12,7 +12,8 @@
 				"Engine",
 				"GameplayAbilities",
 				"CoreUObject",
-				"EnhancedInput"
+				"EnhancedInput",
+				"UMG"
 			]
 		}
 	],
@@ -59,6 +60,15 @@
 		},
 		{
 			"Name": "MoverTests",
+			"Enabled": true
+		},
+		{
+			"Name": "UEGoreSystem",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/58a11c5d7b5047cfbbdc6748c00533f1"
+		},
+		{
+			"Name": "PhysicsControl",
 			"Enabled": true
 		}
 	]

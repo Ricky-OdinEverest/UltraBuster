@@ -29,15 +29,27 @@ class ULTRABUSTER_API ICombatInterface
 public:
 	
 	virtual int32 GetPlayerLevel();
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FVector GetCombatSocketLocation(const FGameplayTag& MontageTag);
+
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	FVector GetPrimaryMuzzle();
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	FVector GetPrimaryBarrel();
 	
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void UpdateFacingTarget(const FVector& Target);
-	
+
+	// For Anim Only
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UAnimMontage* GetHitReactMontage();
+	// For phys Hit
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void HitReaction(const FVector& HitLocation, FName Bone);
 
 	virtual void Die() = 0;
 	

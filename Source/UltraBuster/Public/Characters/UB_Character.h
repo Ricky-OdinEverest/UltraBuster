@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 
 #include "GameplayTagContainer.h"
+#include "UB_BaseCharacter.h"
 #include "AbilitySystem/UB_AbilitySystemComponent.h"
 
 
@@ -16,27 +17,42 @@ class UBuster_StartUpData;
 class UUB_AbilitySystemComponent;
 
 UCLASS()
-class ULTRABUSTER_API AUB_Character : public ACharacter, public IAbilitySystemInterface
+class ULTRABUSTER_API AUB_Character : public AUB_BaseCharacter //, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 
 public:
+//temp inventory
+	void OnDropItemTriggered(const FInputActionValue& Value);
+	void OnEquipNextTriggered(const FInputActionValue& Value);
+	void OnUnequipTriggered(const FInputActionValue& Value);
+
 	// Sets default values for this character's properties
 	AUB_Character(const FObjectInitializer& ObjectInitializer);
 	
-	UAbilitySystemComponent* GetAbilitySystemComponent() const;
 	
 	virtual void PossessedBy(AController* NewController) override;
-	void InitAbilityActorInfo();
 
-	virtual void OnRep_PlayerState() override;
 
 	
-	UPROPERTY(BlueprintReadOnly)
+	virtual void InitAbilityActorInfo() override;
+	
+
+	virtual void OnRep_PlayerState() override;
+	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	// aim variables
+	UPROPERTY(BlueprintReadOnly,Replicated)
 	float NewPitchY;
+	
 	FRotator AimRotationY;
-	// from to steal jump input
+
+	UPROPERTY(BlueprintReadOnly, Replicated)
+	bool bIsAiming = false;
+
+	
+	// steal jump input
 	bool bPressedUltraBusterJump;
 	
 	// Called every frame
@@ -44,12 +60,11 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	void AbilityInputTagHeld(FGameplayTag InputTag);
+
 	UPROPERTY(BlueprintReadOnly)
 	bool bPressedSprint = false;
 	
-	UPROPERTY(BlueprintReadOnly)
-	bool bIsAiming = false;
+
 	
 	void SprintPressed();
 	void SprintReleased();
@@ -120,6 +135,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
 	void UpMoveInputPressed(const struct FInputActionValue& Value);
 
 	//sst ref start
@@ -167,10 +183,10 @@ public:
 
 public:
 // Effect Class and initialization functions for effects
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
-	TSubclassOf<class UGameplayEffect> DefaultPrimaryAttributes;
-	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
-	void InitializeDefaultAttributes() const;
+	//UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	//TSubclassOf<class UGameplayEffect> DefaultPrimaryAttributes;
+	//void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
+	//void InitializeDefaultAttributes() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	FORCEINLINE UTwoDCMC* GetTwoDCMC() const { return TwoDCMC; }
@@ -185,25 +201,20 @@ public:
 protected:
 	//not from the data asset
 	void GiveStartupAbilities();
+	UPROPERTY(EditDefaultsOnly)
+	class UInputAction* DropItemInputAction;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability System", meta = (AllowPrivateAccess = "true"))
-	 //class UUB_AbilitySystemComponent* AbilitySystemComponent;
+	UPROPERTY(EditDefaultsOnly)
+	class UInputAction* EquipNextInputAction;
 
-	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+	UPROPERTY(EditDefaultsOnly)
+	class UInputAction* UnequipInputAction;
 
-	// Store Attribute Set Per Player
-	UPROPERTY()
-	TObjectPtr<UAttributeSet> AttributeSet;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterData")
-	TSoftObjectPtr<UBuster_StartUpData> CharacterStartUpData;
 private:
-
-	UPROPERTY(EditDefaultsOnly, Category = "Buster|Abilities")
-	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
 	void Input_AbilityInputPressed(FGameplayTag InInputTag) ;
 	void Input_AbilityInputReleased(FGameplayTag InInputTag) ;
+	void AbilityInputTagHeld(FGameplayTag InputTag);
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterData", meta = (AllowPrivateAccess = "true"))
 	class UUB_InputConfig* InputConfigDataAsset;

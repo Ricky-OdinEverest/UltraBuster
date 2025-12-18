@@ -67,7 +67,7 @@ void UUB_AbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inpu
 	// LOG 1: Confirm this function is called
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Orange, FString::Printf(TEXT("ASC::AbilityInputTagPressed (Tag: %s)"), *InputTag.ToString()));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Orange, FString::Printf(TEXT("ASC::AbilityInputTagPressed (Tag: %s)"), *InputTag.ToString()));
 	}
 
 	if (InputTag.IsValid())
@@ -132,7 +132,7 @@ void UUB_AbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGame
 
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Cyan, FString::Printf(TEXT("ASC::ProcessAbilityInput IS RUNNING")));
+		//GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Cyan, FString::Printf(TEXT("ASC::ProcessAbilityInput IS RUNNING")));
 	}
 	if (HasMatchingGameplayTag(TAG_Gameplay_AbilityInputBlocked))
 	{
@@ -248,7 +248,7 @@ void UUB_AbilitySystemComponent::ClearAbilityInput()
 void UUB_AbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent,
 	const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle)
 {
-	GEngine->AddOnScreenDebugMessage(1, 8.f, FColor::Blue, FString("Effect Applied!"));
+	//GEngine->AddOnScreenDebugMessage(1, 8.f, FColor::Blue, FString("Effect Applied!"));
 }
 
 

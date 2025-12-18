@@ -23,6 +23,9 @@ class ULTRABUSTER_API AUB_PlayerController : public APlayerController
 public:
 	UUB_AbilitySystemComponent* GetBusterAbilitySystemComponent();
 	AUB_PlayerState* GetBusterPlayerState() const;
+	/*void Input_AbilityInputPressed(FGameplayTag InInputTag);
+	void Input_AbilityInputReleased(FGameplayTag InInputTag);
+	void AbilityInputTagHeld(FGameplayTag InputTag);*/
 
 protected:
 	virtual void PostProcessInput(float DeltaTime, bool bGamePaused) override;

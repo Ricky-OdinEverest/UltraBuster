@@ -203,7 +203,7 @@ void UTwoDCMC::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	
 	
 	FString ModeString = GetMovementModeAsString(MovementMode, CustomMovementMode);
-	SLOG(FString::Printf(TEXT("Movement Mode: %s"), *ModeString));
+	//SLOG(FString::Printf(TEXT("Movement Mode: %s"), *ModeString));
 
 
 }

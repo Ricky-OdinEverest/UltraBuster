@@ -7,20 +7,32 @@
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
+#include "Interaction/CombatInterface.h"
 #include "Net/UnrealNetwork.h"
 
 UUB_AttributeSet::UUB_AttributeSet()
 {
-	InitHealth(100.f);
-	InitMaxHealth(100.f);
+	//InitHealth(100.f);
+	//InitMaxHealth(100.f);
 }
 
 void UUB_AttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
+	// *** VITAL ATTRIBUTES ***
 	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	
+	// *** AMMO ATTRIBUTES ***
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, Ammo, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, MaxAmmo, COND_None, REPNOTIFY_Always);
+
+	// *** RECHARGE ATTRIBUTES ***
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, RechargeTime, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, RechargeBaseDelay, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, RechargePenalty, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, RechargeDelayCap, COND_None, REPNOTIFY_Always);
 }
 
 void UUB_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -33,6 +45,12 @@ void UUB_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
 	}
 
+	if (Attribute == GetAmmoAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxAmmo());
+	}
+
+	
 
 }
 
@@ -61,7 +79,20 @@ void UUB_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 
 			const bool bFatal = NewHealth <= 0.f;
+
+			if (bFatal)
+			{
+				ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor);
+				if (CombatInterface)
+				{
+					CombatInterface->Die();
+				}
+				// Only used for restricting AI movement at the moment
+				//USCR_MeleeBPFunctionLibrary::AddGameplayTagToActorIfNone(Data.Target.GetAvatarActor(),SCR_GameplayTags::Shared_Status_Dead);
+			}
 		}
+
+		
 	}
 
 }
@@ -74,6 +105,38 @@ void UUB_AttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) con
 void UUB_AttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, MaxHealth, OldMaxHealth);
+}
+
+void UUB_AttributeSet::OnRep_Ammo(const FGameplayAttributeData& OldAmmo) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, Ammo, OldAmmo);
+
+}
+
+void UUB_AttributeSet::OnRep_MaxAmmo(const FGameplayAttributeData& OldMaxAmmo) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, MaxAmmo, OldMaxAmmo);
+
+}
+
+void UUB_AttributeSet::OnRep_RechargeTime(const FGameplayAttributeData& OldRechargeTime) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, RechargeTime, OldRechargeTime);
+}
+
+void UUB_AttributeSet::OnRep_RechargeBaseDelay(const FGameplayAttributeData& OldRechargeBaseDelay) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, RechargeBaseDelay, OldRechargeBaseDelay);
+}
+
+void UUB_AttributeSet::OnRep_RechargePenalty(const FGameplayAttributeData& OldRechargePenalty) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, RechargePenalty, OldRechargePenalty);
+}
+
+void UUB_AttributeSet::OnRep_RechargeDelayCap(const FGameplayAttributeData& OldRechargeDelayCap) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, RechargeDelayCap, OldRechargeDelayCap);
 }
 
 void UUB_AttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const

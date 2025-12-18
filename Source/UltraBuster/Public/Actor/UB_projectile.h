@@ -20,15 +20,22 @@ public:
 	// Sets default values for this actor's properties
 	AUB_projectile();
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;
- 
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<USphereComponent> Sphere;
 protected:
+	UFUNCTION()
+	void OnSphereHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
+
+	UPROPERTY(EditDefaultsOnly)
+	float projectileSpeed{1750.f};
 	
 	UFUNCTION()
 	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -39,9 +46,13 @@ private:
  
 	bool bHit = false;
  	
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USphereComponent> Sphere;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UNiagaraSystem> MuzzleFlashEffect;
  
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundBase> MuzzleFlashSound;
+	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UNiagaraSystem> ImpactEffect;
  
