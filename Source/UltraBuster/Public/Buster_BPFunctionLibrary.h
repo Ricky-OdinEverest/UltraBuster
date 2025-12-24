@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "BusterTypes.h"
+#include "UI/WidgetController/AttributeWidgetController.h"
 #include "Buster_BPFunctionLibrary.generated.h"
 
 class AUB_projectile;
@@ -30,4 +31,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "UltraBuster|Combat")
 	static float CalculateNewRechargeTime(UAbilitySystemComponent* ASC, float CurrentServerTime);
+	
+	UFUNCTION(BlueprintPure, Category="UltraBuster|WidgetController")
+	static UAttributeWidgetController* GetAttributeWidgetController(const UObject* WorldContextObject);
 };

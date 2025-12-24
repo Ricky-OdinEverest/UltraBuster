@@ -123,6 +123,8 @@ void AUB_BaseCharacter::InitializeDefaultAttributes() const
 	// IE Max Health Before Health
 	ApplyEffectToSelf(DefaultPrimaryAttributes, 1.f);
 	ApplyEffectToSelf(DefaultVitalAttributes, 1.f);
+	ApplyEffectToSelf(DefaultBulletAttributes, 1.f);
+	
 }
 
 void AUB_BaseCharacter::InitAbilityActorInfo()
@@ -218,7 +220,7 @@ void AUB_BaseCharacter::InitAmmoWidget()
 	}
 }
 
-//Deorecated
+//Deprecated
 void AUB_BaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

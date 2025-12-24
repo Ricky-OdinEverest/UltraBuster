@@ -5,8 +5,19 @@
 
 #include "Blueprint/UserWidget.h"
 #include "UI/Widget/Buster_UserWidget.h"
+#include "UI/WidgetController/AttributeWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 
+UAttributeWidgetController* ABusterHUD::GetAttributeWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (AttributeWidgetController == nullptr)
+	{
+		AttributeWidgetController = NewObject<UAttributeWidgetController>(this, AttributeWidgetControllerClass);
+		AttributeWidgetController->SetWidgetControllerParams(WCParams);
+		AttributeWidgetController->BindCallbacksToDependencies();
+	}
+	return AttributeWidgetController;
+}
 UOverlayWidgetController* ABusterHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
 {
 	if (OverlayWidgetController == nullptr)
@@ -21,8 +32,8 @@ UOverlayWidgetController* ABusterHUD::GetOverlayWidgetController(const FWidgetCo
 // Currently Call By Player
 void ABusterHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
-	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized, please fill out BP_AuraHUD"));
-	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_AuraHUD"));
+	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized, please fill out BP_BusterHUD"));
+	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_BusterHUD"));
 
 	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
 

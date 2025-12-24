@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "BusterHUD.generated.h"
 
+class UAttributeWidgetController;
 class UAttributeSet;
 class UAbilitySystemComponent;
 class UOverlayWidgetController;
@@ -25,6 +26,8 @@ public:
 	UPROPERTY()
 	TObjectPtr<UBuster_UserWidget>  OverlayWidget;
 
+	UAttributeWidgetController* GetAttributeWidgetController(const FWidgetControllerParams& WCParams);
+	
 	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
 
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
@@ -41,4 +44,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UOverlayWidgetController> OverlayWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<UAttributeWidgetController> AttributeWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAttributeWidgetController> AttributeWidgetControllerClass;
 };

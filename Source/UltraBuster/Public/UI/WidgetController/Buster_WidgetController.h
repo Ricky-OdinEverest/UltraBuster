@@ -44,10 +44,10 @@ class ULTRABUSTER_API UBuster_WidgetController : public UObject
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetControllerParams(const FWidgetControllerParams& WCParams);
-	/*UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable)
 	virtual void BroadcastInitialValues();
 	
-	virtual void BindCallbacksToDependencies();*/
+	virtual void BindCallbacksToDependencies();
 protected:
 	
 	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")

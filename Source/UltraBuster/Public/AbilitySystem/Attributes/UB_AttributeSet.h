@@ -78,47 +78,79 @@ public:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 	
 	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttributes;
-
+#pragma  region Player Attributes
 	// --- VITAL ATTRIBUTES ---
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Vital Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Player Attributes")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, Health);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Vital Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Player Attributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, MaxHealth);
+#pragma endregion Player Attributes
 
+#pragma  region Weapon Attributes
 	// --- AMMO ATTRIBUTES ---
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Ammo, Category = "Buster Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Ammo, Category = "Weapon Attributes")
 	FGameplayAttributeData Ammo;
 	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, Ammo);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxAmmo, Category = "Buster Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxAmmo, Category = "Weapon Attributes")
 	FGameplayAttributeData MaxAmmo;
 	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, MaxAmmo);
 
 	// --- RECHARGE ATTRIBUTES ---
-
 	// The timestamp when the weapon will be ready (Server Time Seconds)
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RechargeTime, Category = "Buster Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RechargeTime, Category = "Weapon Attributes")
 	FGameplayAttributeData RechargeTime;
 	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, RechargeTime);
-
+	
 	// The initial delay after a shot (e.g., 3.0s)
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RechargeBaseDelay, Category = "Buster Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RechargeBaseDelay, Category = "Weapon Attributes")
 	FGameplayAttributeData RechargeBaseDelay;
 	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, RechargeBaseDelay);
 
 	// The time added per subsequent shot (e.g., 0.5s)
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RechargePenalty, Category = "Buster Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RechargePenalty, Category = "Weapon Attributes")
 	FGameplayAttributeData RechargePenalty;
 	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, RechargePenalty);
 
 	// The maximum time the recharge can be pushed out to (e.g., 3.0s)
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RechargeDelayCap, Category = "Buster Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_RechargeDelayCap, Category = "Weapon Attributes")
 	FGameplayAttributeData RechargeDelayCap;
 	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, RechargeDelayCap);
 
+	// --- WEAPON HANDLING ATTRIBUTES ---
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FireRate, Category = "Weapon Attributes")
+	FGameplayAttributeData FireRate;
+	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, FireRate);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Spread, Category = "Weapon Attributes")
+	FGameplayAttributeData Spread;
+	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, Spread);
+
+	// --- BULLET PHYSICS ATTRIBUTES ---
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ProjectileSpeed, Category = "Bullet Physics")
+	FGameplayAttributeData ProjectileSpeed;
+	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, ProjectileSpeed);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ProjectileGravityScale, Category = "Bullet Physics")
+	FGameplayAttributeData ProjectileGravityScale;
+	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, ProjectileGravityScale);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ProjectileSize, Category = "Bullet Physics")
+	FGameplayAttributeData ProjectileSize;
+	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, ProjectileSize);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ProjectileBounces, Category = "Bullet Physics")
+	FGameplayAttributeData ProjectileBounces;
+	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, ProjectileBounces);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_KnockbackForce, Category = "Bullet Physics")
+	FGameplayAttributeData KnockbackForce;
+	ATTRIBUTE_ACCESSORS(UUB_AttributeSet, KnockbackForce);
+	
+#pragma endregion Weapon Attributes
 	// value set locally by gameplay effects
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData IncomingDamage;
@@ -148,6 +180,27 @@ public:
 
 	UFUNCTION()
 	void OnRep_RechargeDelayCap(const FGameplayAttributeData& OldRechargeDelayCap) const;
+
+	UFUNCTION()
+	void OnRep_FireRate(const FGameplayAttributeData& OldFireRate) const;
+
+	UFUNCTION()
+	void OnRep_Spread(const FGameplayAttributeData& OldSpread) const;
+
+	UFUNCTION()
+	void OnRep_ProjectileSpeed(const FGameplayAttributeData& OldProjectileSpeed) const;
+
+	UFUNCTION()
+	void OnRep_ProjectileGravityScale(const FGameplayAttributeData& OldProjectileGravityScale) const;
+
+	UFUNCTION()
+	void OnRep_ProjectileSize(const FGameplayAttributeData& OldProjectileSize) const;
+
+	UFUNCTION()
+	void OnRep_ProjectileBounces(const FGameplayAttributeData& OldProjectileBounces) const;
+
+	UFUNCTION()
+	void OnRep_KnockbackForce(const FGameplayAttributeData& OldKnockbackForce) const;
 	
 private:
 

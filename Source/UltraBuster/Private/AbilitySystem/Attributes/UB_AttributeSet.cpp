@@ -6,33 +6,52 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectExtension.h"
+#include "UB_GameplayTags.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "Net/UnrealNetwork.h"
 
 UUB_AttributeSet::UUB_AttributeSet()
 {
-	//InitHealth(100.f);
-	//InitMaxHealth(100.f);
-}
+	// Define the macro locally for cleanliness
+	// Note: We access the tags via the namespace UB_GameplayTags::
+#define MAPTAGSTOATTRIBUTES(AttributeType, AttributeName) \
+TagsToAttributes.Add(UB_GameplayTags::Attributes_##AttributeType##_##AttributeName, Get##AttributeName##Attribute);
 
-void UUB_AttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	
-	// *** VITAL ATTRIBUTES ***
-	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, Health, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
-	
-	// *** AMMO ATTRIBUTES ***
-	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, Ammo, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, MaxAmmo, COND_None, REPNOTIFY_Always);
+	/*
+	 * Player Attributes
+	 */
+	MAPTAGSTOATTRIBUTES(Player, Health)
+	MAPTAGSTOATTRIBUTES(Player, MaxHealth)
 
-	// *** RECHARGE ATTRIBUTES ***
-	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, RechargeTime, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, RechargeBaseDelay, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, RechargePenalty, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, RechargeDelayCap, COND_None, REPNOTIFY_Always);
+	/*
+	 * Weapon Attributes
+	 */
+	MAPTAGSTOATTRIBUTES(Weapon, Ammo)
+	MAPTAGSTOATTRIBUTES(Weapon, MaxAmmo)
+	MAPTAGSTOATTRIBUTES(Weapon, RechargeTime)
+	MAPTAGSTOATTRIBUTES(Weapon, RechargeBaseDelay)
+	MAPTAGSTOATTRIBUTES(Weapon, RechargePenalty)
+	MAPTAGSTOATTRIBUTES(Weapon, RechargeDelayCap)
+	MAPTAGSTOATTRIBUTES(Weapon, FireRate)
+	MAPTAGSTOATTRIBUTES(Weapon, Spread)
+
+	/*
+	 * Bullet Attributes
+	 */
+	MAPTAGSTOATTRIBUTES(Bullet, ProjectileSpeed)
+	MAPTAGSTOATTRIBUTES(Bullet, ProjectileGravityScale)
+	MAPTAGSTOATTRIBUTES(Bullet, ProjectileSize)
+	MAPTAGSTOATTRIBUTES(Bullet, ProjectileBounces)
+	MAPTAGSTOATTRIBUTES(Bullet, KnockbackForce)
+
+	/*
+	 * Meta Attributes
+	 */
+	//MAPTAGSTOATTRIBUTES(Meta, IncomingDamage)
+
+	// Clean up macro
+#undef MAPTAGSTOATTRIBUTES
 }
 
 void UUB_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -51,7 +70,6 @@ void UUB_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
 	}
 
 	
-
 }
 
 void UUB_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -95,48 +113,6 @@ void UUB_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 		
 	}
 
-}
-
-void UUB_AttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, Health, OldHealth);
-}
-
-void UUB_AttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, MaxHealth, OldMaxHealth);
-}
-
-void UUB_AttributeSet::OnRep_Ammo(const FGameplayAttributeData& OldAmmo) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, Ammo, OldAmmo);
-
-}
-
-void UUB_AttributeSet::OnRep_MaxAmmo(const FGameplayAttributeData& OldMaxAmmo) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, MaxAmmo, OldMaxAmmo);
-
-}
-
-void UUB_AttributeSet::OnRep_RechargeTime(const FGameplayAttributeData& OldRechargeTime) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, RechargeTime, OldRechargeTime);
-}
-
-void UUB_AttributeSet::OnRep_RechargeBaseDelay(const FGameplayAttributeData& OldRechargeBaseDelay) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, RechargeBaseDelay, OldRechargeBaseDelay);
-}
-
-void UUB_AttributeSet::OnRep_RechargePenalty(const FGameplayAttributeData& OldRechargePenalty) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, RechargePenalty, OldRechargePenalty);
-}
-
-void UUB_AttributeSet::OnRep_RechargeDelayCap(const FGameplayAttributeData& OldRechargeDelayCap) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, RechargeDelayCap, OldRechargeDelayCap);
 }
 
 void UUB_AttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
@@ -188,6 +164,113 @@ void UUB_AttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData&
 		Props.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetAvatarActor);
 	}
 }
+
+
+void UUB_AttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	// *** VITAL ATTRIBUTES ***
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	
+	// *** AMMO ATTRIBUTES ***
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, Ammo, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, MaxAmmo, COND_None, REPNOTIFY_Always);
+
+	// *** RECHARGE ATTRIBUTES ***
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, RechargeTime, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, RechargeBaseDelay, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, RechargePenalty, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, RechargeDelayCap, COND_None, REPNOTIFY_Always);
+
+	// *** WEAPON ATTRIBUTES ***
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, FireRate, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, Spread, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, ProjectileSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, ProjectileGravityScale, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, ProjectileSize, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, ProjectileBounces, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UUB_AttributeSet, KnockbackForce, COND_None, REPNOTIFY_Always);
+}
+
+void UUB_AttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, Health, OldHealth);
+}
+
+void UUB_AttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, MaxHealth, OldMaxHealth);
+}
+
+void UUB_AttributeSet::OnRep_Ammo(const FGameplayAttributeData& OldAmmo) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, Ammo, OldAmmo);
+
+}
+
+void UUB_AttributeSet::OnRep_MaxAmmo(const FGameplayAttributeData& OldMaxAmmo) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, MaxAmmo, OldMaxAmmo);
+
+}
+
+void UUB_AttributeSet::OnRep_RechargeTime(const FGameplayAttributeData& OldRechargeTime) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, RechargeTime, OldRechargeTime);
+}
+
+void UUB_AttributeSet::OnRep_RechargeBaseDelay(const FGameplayAttributeData& OldRechargeBaseDelay) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, RechargeBaseDelay, OldRechargeBaseDelay);
+}
+
+void UUB_AttributeSet::OnRep_RechargePenalty(const FGameplayAttributeData& OldRechargePenalty) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, RechargePenalty, OldRechargePenalty);
+}
+
+void UUB_AttributeSet::OnRep_RechargeDelayCap(const FGameplayAttributeData& OldRechargeDelayCap) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, RechargeDelayCap, OldRechargeDelayCap);
+}
+
+void UUB_AttributeSet::OnRep_FireRate(const FGameplayAttributeData& OldFireRate) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, FireRate, OldFireRate);
+}
+
+void UUB_AttributeSet::OnRep_Spread(const FGameplayAttributeData& OldSpread) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, Spread, OldSpread);
+}
+
+void UUB_AttributeSet::OnRep_ProjectileSpeed(const FGameplayAttributeData& OldProjectileSpeed) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, ProjectileSpeed, OldProjectileSpeed);
+}
+
+void UUB_AttributeSet::OnRep_ProjectileGravityScale(const FGameplayAttributeData& OldProjectileGravityScale) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, ProjectileGravityScale, OldProjectileGravityScale);
+}
+
+void UUB_AttributeSet::OnRep_ProjectileSize(const FGameplayAttributeData& OldProjectileSize) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, ProjectileSize, OldProjectileSize);
+}
+
+void UUB_AttributeSet::OnRep_ProjectileBounces(const FGameplayAttributeData& OldProjectileBounces) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, ProjectileBounces, OldProjectileBounces);
+}
+
+void UUB_AttributeSet::OnRep_KnockbackForce(const FGameplayAttributeData& OldKnockbackForce) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UUB_AttributeSet, KnockbackForce, OldKnockbackForce);
+}
+
 
 void UUB_AttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHit,
 	bool bCriticalHit) const

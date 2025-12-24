@@ -42,6 +42,12 @@ public:
 
 	void AbilityActorInfoSet();
 	FEffectAssetTags EffectAssetTags;
+
+	
+	void UpgradeAttribute(const FGameplayTag& AttributeTag);
+
+	UFUNCTION(Server, Reliable)
+	void ServerUpgradeAttribute(const FGameplayTag& AttributeTag);
 	
 protected:
 	virtual void BeginPlay() override;

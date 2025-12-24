@@ -23,8 +23,9 @@ class UNiagaraSystem;
 class UWidgetComponent;
 
 class UInventoryComponent;
-
+class FOnAttributeChangedSignature;
 // could also just include this from another class
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 
 UCLASS(Abstract)
@@ -90,6 +91,10 @@ public:
 	// Effect Class and initialization functions for effects
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	TSubclassOf<class UGameplayEffect> DefaultVitalAttributes;
+
+	// Effect Class and initialization functions for effects
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<class UGameplayEffect> DefaultBulletAttributes;
 	
 	
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;

@@ -2,6 +2,8 @@
 
 
 #include "AbilitySystem/UB_AbilitySystemComponent.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Abilities/UB_GameplayAbility.h" 
 #include "NativeGameplayTags.h" 
 #include "UB_GameplayTags.h"
@@ -235,6 +237,22 @@ void UUB_AbilitySystemComponent::AbilityActorInfoSet()
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UUB_AbilitySystemComponent::ClientEffectApplied);
 
 	const FUB_GameplayTags& GameplayTags = FUB_GameplayTags::Get();
+}
+
+void UUB_AbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	ServerUpgradeAttribute(AttributeTag);
+}
+
+void UUB_AbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FGameplayTag& AttributeTag)
+{
+	FGameplayEventData Payload;
+	Payload.EventTag = AttributeTag;
+	Payload.EventMagnitude = 1000.f;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(), AttributeTag, Payload);
+
+
 }
 
 void UUB_AbilitySystemComponent::ClearAbilityInput()

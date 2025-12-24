@@ -23,7 +23,9 @@ enum class EBusterAbilityActivationPolicy : uint8
 	WhileInputActive,
 
 	// Try to activate the ability when an avatar is assigned.
-	OnSpawn
+	OnSpawn,
+
+	Passive
 };
 
 /**

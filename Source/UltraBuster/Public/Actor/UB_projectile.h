@@ -33,9 +33,6 @@ protected:
 	void OnSphereHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
-
-	UPROPERTY(EditDefaultsOnly)
-	float projectileSpeed{1750.f};
 	
 	UFUNCTION()
 	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -64,5 +61,16 @@ private:
  
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
+
+public:
+	// Attribute Driven Parameters
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "GAS")
+	float InitialSpeed = 1750.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "GAS")
+	float GravityScale = 0.5f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "GAS")
+	int32 MaxBounces = 0;
 
 };

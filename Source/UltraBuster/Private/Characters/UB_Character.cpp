@@ -89,13 +89,13 @@ void AUB_Character::InitAbilityActorInfo()
 	}
 	
 	
-	/*if (AUB_PlayerController* BusterPlayerController = Cast<AUB_PlayerController>(GetController()))
+	if (AUB_PlayerController* BusterPlayerController = Cast<AUB_PlayerController>(GetController()))
 	{
 		if (ABusterHUD* BusterHUD = Cast<ABusterHUD>(BusterPlayerController->GetHUD()))
 		{
 			BusterHUD->InitOverlay(BusterPlayerController, UB_PlayerState, AbilitySystemComponent, AttributeSet);
 		}
-	}*/
+	}
 	
 	
 }

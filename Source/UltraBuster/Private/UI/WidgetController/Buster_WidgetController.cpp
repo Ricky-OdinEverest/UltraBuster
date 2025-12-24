@@ -10,7 +10,7 @@ void UBuster_WidgetController::SetWidgetControllerParams(const FWidgetController
 	AbilitySystemComponent = WCParams.AbilitySystemComponent;
 	AttributeSet = WCParams.AttributeSet;
 }
-/*
+
 void UBuster_WidgetController::BroadcastInitialValues()
 {
 }
@@ -18,4 +18,4 @@ void UBuster_WidgetController::BroadcastInitialValues()
 void UBuster_WidgetController::BindCallbacksToDependencies()
 {
 }
-*/
+

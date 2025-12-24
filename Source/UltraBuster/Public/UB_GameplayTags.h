@@ -16,6 +16,29 @@ namespace UB_GameplayTags
 	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Dash);
 
 	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Reload)
+
+	/** Player Attributes **/
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Player_Health)
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Player_MaxHealth)
+
+	/** Weapon Attributes **/
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Weapon_Ammo)
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Weapon_MaxAmmo)
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Weapon_RechargeTime)
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Weapon_RechargeBaseDelay)
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Weapon_RechargePenalty)
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Weapon_RechargeDelayCap)
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Weapon_FireRate)
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Weapon_Spread)
+
+	/** Physics Attributes **/
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Bullet_ProjectileSpeed)
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Bullet_ProjectileGravityScale)
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Bullet_ProjectileSize)
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Bullet_ProjectileBounces)
+	ULTRABUSTER_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attributes_Bullet_KnockbackForce)
+
+
 };
 
 
@@ -27,8 +50,9 @@ public:
 	
 	FGameplayTagContainer UB_TagsContainer = FGameplayTagContainer();
 	
+	/*
 	FGameplayTag Attributes_MaxHealth;
-	FGameplayTag Attributes_Health;
+	FGameplayTag Attributes_Health;*/
 
 	FGameplayTag Damage;
 	FGameplayTag Damage_Bullet;

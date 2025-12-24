@@ -8,6 +8,10 @@
 #include "Actor/UB_projectile.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Attributes/UB_AttributeSet.h"
+#include "Characters/Player/UB_PlayerState.h"
+#include "Kismet/GameplayStatics.h"
+#include "UI/HUD/BusterHUD.h"
+#include "UI/WidgetController/AttributeWidgetController.h"
 
 static TAutoConsoleVariable<int32> CVarShowRadialDamage(
 	TEXT("ShowRadialDamage"),
@@ -154,4 +158,20 @@ float UBuster_BPFunctionLibrary::CalculateNewRechargeTime(UAbilitySystemComponen
 	}
 
 	return NewTime;
+}
+UAttributeWidgetController* UBuster_BPFunctionLibrary::GetAttributeWidgetController(
+	const UObject* WorldContextObject)
+{
+	if (APlayerController* PC = UGameplayStatics::GetPlayerController(WorldContextObject, 0))
+	{
+		if (ABusterHUD* SCR_HUD = Cast<ABusterHUD>(PC->GetHUD()))
+		{
+			AUB_PlayerState* PS = PC->GetPlayerState<AUB_PlayerState>();
+			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+			UAttributeSet* AS = PS->GetAttributeSet();
+			const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
+			return SCR_HUD->GetAttributeWidgetController(WidgetControllerParams);
+		}
+	}
+	return nullptr;
 }

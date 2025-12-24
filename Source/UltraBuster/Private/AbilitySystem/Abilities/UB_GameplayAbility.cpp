@@ -20,10 +20,8 @@ UUB_GameplayAbility::UUB_GameplayAbility(const FObjectInitializer& ObjectInitial
 	ActivationGroup = EBusterAbilityActivationGroup::Independent;
 
 	bLogCancelation = false;
-
-
+	
 }
-
 
 UUB_AbilitySystemComponent* UUB_GameplayAbility::GetUltraBusterAbilitySystemComponentFromActorInfo() const
 {
@@ -147,6 +145,13 @@ void UUB_GameplayAbility::SetCanBeCanceled(bool bCanBeCanceled)
 void UUB_GameplayAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
 	Super::OnGiveAbility(ActorInfo, Spec);
+
+	if (ActivationPolicy == EBusterAbilityActivationPolicy::Passive)
+	{
+		if (ActorInfo && !Spec.IsActive())
+		
+		ActorInfo->AbilitySystemComponent->TryActivateAbility(Spec.Handle);
+	}
 }
 
 void UUB_GameplayAbility::OnRemoveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)

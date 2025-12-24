@@ -9,6 +9,7 @@
 #include "UB_GameplayTags.h"
 //#include "Components/SphereComponent.h"
 #include "BusterTypes.h"
+#include "AbilitySystem/Attributes/UB_AttributeSet.h"
 #include "Actor/InventoryActors/WeaponItemActor.h"
 #include "ActorComponents/InventoryComponent.h"
 #include "Interaction/CombatInterface.h"
@@ -23,7 +24,7 @@ bool UUB_ProjectileGameplayAbility::CommitAbility(const FGameplayAbilitySpecHand
 {
 	return Super::CommitAbility(Handle, ActorInfo, ActivationInfo, OptionalRelevantTags);
 }
-
+//unused
 bool UUB_ProjectileGameplayAbility::HasEnoughAmmo() const
 {
 	/*if (UAbilitySystemComponent* AbilityComponent = GetAbilitySystemComponentFromActorInfo())
@@ -39,7 +40,7 @@ bool UUB_ProjectileGameplayAbility::HasEnoughAmmo() const
 
 	return false;
 }
-
+//unused
 void UUB_ProjectileGameplayAbility::DecAmmo()
 {
 	/*if (UAbilitySystemComponent* AbilityComponent = GetAbilitySystemComponentFromActorInfo())
@@ -80,6 +81,10 @@ void UUB_ProjectileGameplayAbility::SpawnProjectile(const FVector& ProjectileTar
 		//const FVector BarrelSocketLocation = ICombatInterface::Execute_GetPrimaryBarrel(GetAvatarActorFromActorInfo(), BarrelName);
 
 		FRotator Rotation = (ProjectileTargetLocation - MuzzleSocketLocation).Rotation();
+		//Obtain Attribute Values from player
+		float SpeedVal = GetAbilitySystemComponentFromActorInfo()->GetNumericAttribute(UUB_AttributeSet::GetProjectileSpeedAttribute());
+		float GravityVal = GetAbilitySystemComponentFromActorInfo()->GetNumericAttribute(UUB_AttributeSet::GetProjectileGravityScaleAttribute());
+		float BounceVal = GetAbilitySystemComponentFromActorInfo()->GetNumericAttribute(UUB_AttributeSet::GetProjectileBouncesAttribute());
 		
  
 		FTransform SpawnTransform;
@@ -113,8 +118,12 @@ void UUB_ProjectileGameplayAbility::SpawnProjectile(const FVector& ProjectileTar
 			const float ScaledDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
 			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaledDamage);
 		}
-		
+		// PASS Attributes
 		Projectile->DamageEffectSpecHandle = SpecHandle;
+		Projectile->InitialSpeed = SpeedVal;
+		Projectile->GravityScale = GravityVal;
+		Projectile->MaxBounces = (int32)BounceVal;
+
 
 		/*if (AActor* MyAvatar = GetAvatarActorFromActorInfo())
 		{

@@ -31,13 +31,7 @@ AUB_projectile::AUB_projectile()
 
 	Sphere->IgnoreActorWhenMoving(GetInstigator(), true);
 
-	
-//defualts
-	/*Sphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	Sphere->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
-	Sphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
-	Sphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);*/
- 
+	//runs prior to spawn
 	 ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
 	 ProjectileMovement->InitialSpeed = 1750.f;
 	 ProjectileMovement->MaxSpeed = 1750.f;
@@ -81,6 +75,15 @@ void AUB_projectile::OnSphereHit(UPrimitiveComponent* HitComponent, AActor* Othe
 
 void AUB_projectile::BeginPlay()
 {
+
+	if (ProjectileMovement)
+	{
+		ProjectileMovement->InitialSpeed = InitialSpeed;
+		ProjectileMovement->MaxSpeed = InitialSpeed; // Might need to modify for projectile that picks up speed
+		ProjectileMovement->ProjectileGravityScale = GravityScale;
+		ProjectileMovement->bShouldBounce = (MaxBounces > 0);
+		// Maybe add bounce logic
+	}
 	Super::BeginPlay();
 	SetLifeSpan(LifeSpan);
 
@@ -105,8 +108,6 @@ void AUB_projectile::BeginPlay()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("ImpactSound is null in Destroyed()"));
 		}
-        
-	
 
 
 	}
